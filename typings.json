@@ -1,0 +1,8 @@
+{
+  "name": "egghead-react",
+  "dependencies": {},
+  "globalDependencies": {
+    "react": "registry:dt/react#0.14.0+20161008064207",
+    "react-autosuggest": "registry:dt/react-autosuggest#3.7.3+20160829142741"
+  }
+}
