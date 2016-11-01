@@ -11,7 +11,6 @@ class App extends Component {
       blue  : 128,
     };
     this.update = this.update.bind(this);
-
   }
   render() {
     return (
