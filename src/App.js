@@ -4,37 +4,39 @@ import './App.css';
 class App extends React.Component {
   constructor() {
     super();
-    this.state = { data: [
-      { id: 1, name: 'Simon Bailey'},
-      { id: 2, name: 'Thomas Burleson'},
-      { id: 3, name: 'Will Button'},
-      { id: 4, name: 'Ben Clinkinbeard'},
-    ]};
+    this.state = {
+      input: '/* add your jsx here */',
+      output: '',
+      err: '',
+    }
     this.update = this.update.bind(this);
-
-  }
-  render() {
-    let rows = this.state.data.map(person => {
-      return <PersonRow key={person.id} data={person}></PersonRow>
-    })
-    return (
-      <table>
-        <tbody>{rows}</tbody>
-      </table>
-    );
   }
   update(e) {
-    this.setState({ val: e.target.value });
+    let code = e.target.value;
+    try {
+      this.setState({
+        output
+      });
+    } catch (e) {
+
+    }
+  }
+  render() {
+    return (
+      <div>
+        <header>{this.state.err}</header>
+        <div classNam="container">
+          <textarea
+            onChange={this.update}
+            defaultValue={this.state.input}></textarea>
+        </div>
+
+        <pre>
+          {this.state.output}
+        </pre>
+      </div>
+    );
   }
 }
-
-const PersonRow = (props) => {
-  return (
-    <tr>
-      <td>{props.data.id}</td>
-      <td>{props.data.name}</td>
-    </tr>
-  );
-};
 
 export default App;
