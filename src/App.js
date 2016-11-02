@@ -1,44 +1,69 @@
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
 import './App.css';
+
+const counter = (state = { val: 0 }, action) => {
+  switch (action.type) {
+    case 'INCREMENT':
+      return Object.assign({}, state, { val: state.val + 1 });
+    case 'DECREMENT':
+      return Object.assign({}, state, { val: state.val - 1 });
+    default:
+      return Object.assign({}, state);
+  }
+};
+
+const createStore = (reducer) => {
+  let state;
+  let listeners = [];
+
+  const getState = () => state;
+
+  const dispatch = (action) => {
+    state = reducer(state, action);
+    listeners.forEach(listener => listener());
+  };
+
+  const subscribe = (listener) => {
+    listeners.push(listener);
+    return () => {
+      listeners = listeners.filter(l => l !== listener);
+    }
+  };
+
+  dispatch({});
+
+  return { getState, dispatch, subscribe };
+}
+
+const store = createStore(counter);
 
 class App extends Component {
   constructor() {
     super();
-    this.state = { 
-      red   : 128,
-      green : 128,
-      blue  : 128,
-    };
-    this.update = this.update.bind(this);
+    this.state = store.getState();
+    this.increment = this.increment.bind(this);
+
+    store.subscribe(() => { 
+      this.setState(store.getState())
+    });
+  }
+  increment() {
+    store.dispatch({type: 'INCREMENT'});
   }
   render() {
     return (
       <div>
-        <Slider ref="red" val={this.state.red} update={this.update} />
-        <Slider ref="green" val={this.state.green} update={this.update} />
-        <Slider ref="blue" val={this.state.blue} update={this.update} />      
+        <State state={this.state} />
+        <button onClick={this.increment}>increment</button>
       </div>
     );
-  }
-  update(e) {
-    this.setState({ 
-      red: ReactDOM.findDOMNode(this.refs.red.refs.slider).value,  
-      green: ReactDOM.findDOMNode(this.refs.green.refs.slider).value,  
-      blue: ReactDOM.findDOMNode(this.refs.blue.refs.slider).value,  
-    });
   }
 }
 
-class Slider extends React.Component {
-  render() {
-    return (
-      <div>
-        <input ref="slider" type="range" min="0" max="255" onChange={this.props.update} value={this.props.val} />
-        <span>{this.props.val}</span>
-      </div>
-    );
-  }
+const State = (props) => {
+  return (
+    <span>State: {props.state.val}</span>
+  );
 }
 
 export default App;
