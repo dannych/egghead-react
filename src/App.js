@@ -28,11 +28,15 @@ class App extends Component {
   increment() {
     store.dispatch({type: 'INCREMENT'});
   }
+  decrement() {
+    store.dispatch({type: 'DECREMENT'});
+  }
   render() {
     return (
       <div>
         <State state={this.state} />
-        <button onClick={this.increment}>increment</button>
+        <button onClick={this.increment}>+</button>
+        <button onClick={this.decrement}>-</button>
       </div>
     );
   }
@@ -40,7 +44,7 @@ class App extends Component {
 
 const State = (props) => {
   return (
-    <span>State: {props.state.val}</span>
+    <h1>State: {props.state.val}</h1>
   );
 }
 
