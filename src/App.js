@@ -2,50 +2,74 @@ import React, { Component } from 'react';
 import { createStore } from 'redux';
 import './App.css';
 
-const counter = (state = { val: 0 }, action) => {
+const todo = (state, action) => {
   switch (action.type) {
-    case 'INCREMENT':
-      return Object.assign({}, state, { val: state.val + 1 });
-    case 'DECREMENT':
-      return Object.assign({}, state, { val: state.val - 1 });
+    case 'ADD_TODO':
+      return {
+        id: action.id,
+        text: action.text,
+        completed: false
+      };
+    case 'TOGGLE_TODO':
+      if (state.id === action.id) {
+        return Object.assign({}, state, {
+          completed: !state.completed
+        });
+      }
+      return state;
     default:
-      return Object.assign({}, state);
+      return state;
   }
 };
 
-const store = createStore(counter);
+const todos = (state = [], action) => {
+  switch (action.type) {
+    case 'ADD_TODO':
+      return [
+        ...state,
+        todo(undefined, action)
+      ];
+    case 'TOGGLE_TODO':
+      return state.map(t => todo(t, action));
+    default:
+      return state;
+  }
+};
+
+const store = createStore(todos);
 
 class App extends Component {
+  count;
+
   constructor() {
     super();
-    this.state = store.getState();
-    this.increment = this.increment.bind(this);
-
-    store.subscribe(() => { 
-      this.setState(store.getState())
-    });
+    this.count = 0;
+    this.state = { todos: store.getState(), form: 'hello' };
+    this.addTodo = this.addTodo.bind(this);
+    this.changeTodo = this.changeTodo.bind(this);
   }
-  increment() {
-    store.dispatch({type: 'INCREMENT'});
+  addTodo() {
+    store.dispatch({ type: 'ADD_TODO', text: this.state.form, id: this.count++ });
+    this.setState(Object.assign({}, { todos: store.getState(), form: '' }));
   }
-  decrement() {
-    store.dispatch({type: 'DECREMENT'});
+  changeTodo(e) {
+    this.setState(Object.assign({}, { form: e.target.value }));
   }
   render() {
+    let todos = this.state.todos.map(todo => {
+      return <li key={todo.id}>{todo.text}</li>;
+    });
     return (
       <div>
-        <State state={this.state} />
-        <button onClick={this.increment}>+</button>
-        <button onClick={this.decrement}>-</button>
+        <input type="text" value={this.state.form} onChange={this.changeTodo} />
+        <input type="submit" onClick={this.addTodo} />
+
+        <ul>
+          {todos}
+        </ul>
       </div>
     );
   }
-}
-
-const State = (props) => {
-  return (
-    <h1>State: {props.state.val}</h1>
-  );
 }
 
 export default App;
